@@ -1,0 +1,52 @@
+# Shuffle SOAR Installation Guide for Kali Linux
+
+```bash
+# Step 1: Update Kali Linux & Install Dependencies
+sudo apt update && sudo apt upgrade -y
+sudo apt install -y docker.io docker-compose git
+
+# Enable Docker to start at boot
+sudo systemctl enable docker --now
+
+# Verify Docker is working
+docker --version
+docker-compose --version
+
+# Step 2: Clone the Shuffle Repository
+git clone https://github.com/Shuffle/Shuffle.git
+cd Shuffle
+
+# Create a database directory
+mkdir shuffle-database
+sudo chown -R 1000:1000 shuffle-database
+sudo chmod -R 777 shuffle-database
+
+# Step 3: Fix Elasticsearch Memory Issue
+sudo sysctl -w vm.max_map_count=262144
+echo "vm.max_map_count=262144" | sudo tee -a /etc/sysctl.conf
+
+# Step 4: Start Shuffle SOAR using Docker Compose
+docker-compose up -d
+
+# Check if Shuffle containers are running
+docker ps
+
+# If a container is not running, restart it
+docker-compose restart
+
+# Step 5: Access Shuffle SOAR UI
+# Inside Kali Linux (VMware), open a browser and go to:
+# http://localhost:3001 or https://localhost:3443
+
+# From Your Host OS (Windows/Mac), find Kali VM’s IP address
+ip a
+
+# Open a browser on your main OS and enter:
+# http://<Kali_IP>:3001 or https://<Kali_IP>:3443
+
+# Step 6: (Optional) Fix Docker Permission Issues
+# If you get a permission error when running Docker:
+sudo usermod -aG docker $USER
+newgrp docker
+
+# Restart your terminal
